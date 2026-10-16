@@ -99,7 +99,7 @@ addEventListener('keydown', e => {
   if (keyMap[e.code]) { keys[keyMap[e.code]] = true; e.preventDefault(); }
   if (e.code === 'KeyP' || e.code === 'Escape') togglePause();
   if (e.code === 'KeyM') muted = !muted;
-  if ((e.code === 'Enter' || e.code === 'Space') && canStart()) startGame();
+  if ((e.code === 'Enter' || e.code === 'Space') && !e.repeat && canStart()) startGame();
 });
 addEventListener('keyup', e => { if (keyMap[e.code]) keys[keyMap[e.code]] = false; });
 document.querySelectorAll('#touch button').forEach(b => {
