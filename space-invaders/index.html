@@ -104,10 +104,10 @@ addEventListener('keydown', e => {
 addEventListener('keyup', e => { if (keyMap[e.code]) keys[keyMap[e.code]] = false; });
 document.querySelectorAll('#touch button').forEach(b => {
   const k = b.dataset.k;
-  b.addEventListener('pointerdown', e => { e.preventDefault(); audio(); keys[k] = true; if canStart() startGame(); });
+  b.addEventListener('pointerdown', e => { e.preventDefault(); audio(); keys[k] = true; if (canStart()) startGame(); });
   ['pointerup', 'pointerleave', 'pointercancel'].forEach(ev => b.addEventListener(ev, () => keys[k] = false));
 });
-cvs.addEventListener('pointerdown', () => { audio(); if canStart() startGame(); });
+cvs.addEventListener('pointerdown', () => { audio(); if (canStart()) startGame(); });
 
 // ---------- Game state ----------
 let state = 'title', gameOverAt = 0, score = 0, hiScore = +localStorage.getItem('si-hiscore') || 0, lives = 3, level = 1;
