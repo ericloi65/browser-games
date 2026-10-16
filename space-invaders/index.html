@@ -91,6 +91,7 @@ const sfx = {
 };
 
 // ---------- Input ----------
+const canStart = () => state === 'title' || (state === 'gameover' && performance.now() - gameOverAt > 1500);
 const keys = { left: false, right: false, fire: false };
 const keyMap = { ArrowLeft: 'left', KeyA: 'left', ArrowRight: 'right', KeyD: 'right', Space: 'fire', ArrowUp: 'fire', KeyW: 'fire' };
 addEventListener('keydown', e => {
@@ -98,18 +99,18 @@ addEventListener('keydown', e => {
   if (keyMap[e.code]) { keys[keyMap[e.code]] = true; e.preventDefault(); }
   if (e.code === 'KeyP' || e.code === 'Escape') togglePause();
   if (e.code === 'KeyM') muted = !muted;
-  if ((e.code === 'Enter' || e.code === 'Space') && (state === 'title' || state === 'gameover')) startGame();
+  if ((e.code === 'Enter' || e.code === 'Space') && canStart()) startGame();
 });
 addEventListener('keyup', e => { if (keyMap[e.code]) keys[keyMap[e.code]] = false; });
 document.querySelectorAll('#touch button').forEach(b => {
   const k = b.dataset.k;
-  b.addEventListener('pointerdown', e => { e.preventDefault(); audio(); keys[k] = true; if (state === 'title' || state === 'gameover') startGame(); });
+  b.addEventListener('pointerdown', e => { e.preventDefault(); audio(); keys[k] = true; if canStart() startGame(); });
   ['pointerup', 'pointerleave', 'pointercancel'].forEach(ev => b.addEventListener(ev, () => keys[k] = false));
 });
-cvs.addEventListener('pointerdown', () => { audio(); if (state === 'title' || state === 'gameover') startGame(); });
+cvs.addEventListener('pointerdown', () => { audio(); if canStart() startGame(); });
 
 // ---------- Game state ----------
-let state = 'title', score = 0, hiScore = +localStorage.getItem('si-hiscore') || 0, lives = 3, level = 1;
+let state = 'title', gameOverAt = 0, score = 0, hiScore = +localStorage.getItem('si-hiscore') || 0, lives = 3, level = 1;
 let player, pBullet, aBullets = [], aliens, formation, shields, ufo, particles = [], stateTimer, extraLifeGiven, ufoTimer;
 const stars = Array.from({ length: 80 }, () => ({ x: Math.random() * W, y: Math.random() * H, s: Math.random() * 1.5 + 0.3, tw: Math.random() * 6 }));
 
@@ -197,7 +198,7 @@ function update(dt) {
   if (state === 'dying') {
     stateTimer -= dt;
     if (stateTimer <= 0) {
-      if (lives <= 0) { state = 'gameover'; return; }
+      if (lives <= 0) { state = 'gameover'; gameOverAt = performance.now(); return; }
       player.dead = false; player.inv = 1.5; player.x = W / 2 - player.w / 2; aBullets = [];
       state = 'playing';
     }
